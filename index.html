@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Executive Finance & Salary Ledger System Pro</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#0b0f19',
+              card: '#111827',
+              border: '#1f2937',
+              gold: '#f59e0b',
+              goldHover: '#d97706',
+              accent: '#10b981',
+              danger: '#ef4444'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0b0f19;
+      color: #f3f4f6;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .gold-border {
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #111827;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #374151;
+      border-radius: 4px;
+    }
+    /* Standard interactive numeric pin inputs to guarantee 100% device keyboard reliability */
+    .pin-digit-input {
+      width: 56px;
+      height: 56px;
+      background: #0f172a;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #ffffff;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .pin-digit-input:focus {
+      border-color: #f59e0b;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+      background: #1e293b;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100 flex flex-col justify-between custom-scrollbar">
+
+  <!-- ==================== 1. USER LOCK SCREEN ==================== -->
+  <div id="userLockScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 p-4">
+    <div class="glass-card gold-border w-full max-w-md p-8 rounded-2xl shadow-2xl space-y-6 text-center">
+      <div class="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center text-slate-950 text-3xl font-extrabold shadow-lg shadow-amber-500/20">
+        <i class="fa-solid fa-wallet"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold text-white tracking-wide">Executive Finance Ledger</h1>
+        <p class="text-xs text-slate-400 mt-1">Professional Secure Access Portal</p>
+      </div>
+
+      <form id="userLoginForm" class="space-y-5 text-left" onsubmit="handleUserLogin(event)">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">User Email</label>
+          <input type="email" id="userEmailInput" required value="kyugayg1@gmail.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-amber-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">MR YUGA</label>
+          <!-- Robust 4 separate numeric input boxes with auto-advance and backspace support -->
+          <div class="flex justify-between gap-3" id="userPinGroup">
+            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input" data-index="0" oninput="handlePinInput(event, 'userPinGroup')" onkeydown="handlePinKeyDown(event, 'userPinGroup')" autocomplete="off" required>
+            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input" data-index="1" oninput="handlePinInput(event, 'userPinGroup')" onkeydown="handlePinKeyDown(event, 'userPinGroup')" autocomplete="off" required>
+            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input" data-index="2" oninput="handlePinInput(event, 'userPinGroup')" onkeydown="handlePinKeyDown(event, 'userPinGroup')" autocomplete="off" required>
+            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input" data-index="3" oninput="handlePinInput(event, 'userPinGroup')" onkeydown="handlePinKeyDown(event, 'userPinGroup')" autocomplete="off" required>
+          </div>
+        </div>
+
+        <div id="userLoginError" class="hidden text-xs text-red-400 text-center font-medium bg-red-950/40 p-2.5 rounded-lg border border-red-800/40">
+          Invalid credentials. Please verify your email and PIN (1234).
+        </div>
+
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3.5 rounded-xl transition duration-200 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-right-to-bracket"></i> Login to Dashboard
+        </button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ==================== MAIN APPLICATION CONTAINER ==================== -->
+  <div id="appContainer" class="hidden min-h-screen flex flex-col">
+
+    <!-- TOP HEADER NAVBAR -->
+    <header class="bg-slate-900/90 border-b border-slate-800 sticky top-0 z-30 backdrop-blur-md">
+      <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-slate-950 font-extrabold text-lg shadow-md shadow-amber-500/20">
+            <i class="fa-solid fa-chart-pie"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="font-bold text-white tracking-wide text-base">Salary Ledger</h2>
+              <span id="adminBadge" class="hidden text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">ADMIN MODE</span>
+            </div>
+            <p id="currentUserDisplay" class="text-xs text-slate-400">kyugayg1@gmail.com</p>
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE NAV ACTIONS -->
+        <div class="flex items-center gap-3">
+          <button id="adminPortalBtn" onclick="openAdminAuthModal()" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition">
+            <i class="fa-solid fa-user-shield"></i>
+            <span id="adminBtnText">Admin Portal</span>
+          </button>
+          <button onclick="logoutUser()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-lock"></i>
+            <span class="hidden sm:inline">Lock</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN BODY CONTENT -->
+    <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-1 space-y-6">
+
+      <!-- MONTH & VIEW NAVIGATOR BAR -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-md">
+        <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
+          <button onclick="changeMonth(-1)" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition border border-slate-700">
+            <i class="fa-solid fa-chevron-left text-xs"></i>
+          </button>
+          <div class="text-center">
+            <span id="currentMonthYearDisplay" class="font-bold text-amber-400 text-lg tracking-wide">November 2026</span>
+          </div>
+          <button onclick="changeMonth(1)" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition border border-slate-700">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800 w-full sm:w-auto">
+          <button id="viewDashboardTabBtn" onclick="switchMainTab('dashboard')" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 transition shadow-md">
+            <i class="fa-solid fa-table-cells-large mr-1.5"></i> Dashboard
+          </button>
+          <button id="viewReportsTabBtn" onclick="switchMainTab('reports')" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
+            <i class="fa-solid fa-chart-line mr-1.5"></i> Monthly Reports
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================== VIEW 1: MAIN DASHBOARD ==================== -->
+      <div id="tabDashboardView" class="space-y-6">
+
+        <!-- ACCOUNT CAPITAL BALANCE CARDS (2x2 DOMINO CARDS GRID) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          
+          <!-- DOMINO CARD 1: Total Salary Credited (Up) + Bank Capital (Down) -->
+          <div class="glass-card p-5 rounded-2xl space-y-4 border border-slate-800 bg-slate-900/60 shadow-xl">
+            <!-- Top Section: Total Salary Credited -->
+            <div class="space-y-1.5 pb-4 border-b border-slate-800/80 border-l-4 border-l-emerald-500 pl-3">
+              <div class="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
+                <span>Total Salary Credited</span>
+                <i class="fa-solid fa-money-bill-wave text-emerald-400 text-sm"></i>
+              </div>
+              <div id="cardTotalIncome" class="text-xl font-black text-emerald-400">RM 0.00</div>
+              <p class="text-[10px] text-slate-500">Monthly capital logged by Admin</p>
+            </div>
+
+            <!-- Bottom Section: Bank Capital -->
+            <div class="space-y-1.5 border-l-4 border-l-blue-500 pl-3">
+              <div class="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
+                <span>Bank Capital</span>
+                <i class="fa-solid fa-building-columns text-blue-400 text-sm"></i>
+              </div>
+              <div id="cardBankBalance" class="text-xl font-black text-blue-400">RM 0.00</div>
+              <p class="text-[10px] text-slate-500">Remaining in Bank Account</p>
+            </div>
+          </div>
+
+          <!-- DOMINO CARD 2: Cash Capital (Up) + QR e-Wallet (Down) -->
+          <div class="glass-card p-5 rounded-2xl space-y-4 border border-slate-800 bg-slate-900/60 shadow-xl">
+            <!-- Top Section: Cash Capital -->
+            <div class="space-y-1.5 pb-4 border-b border-slate-800/80 border-l-4 border-l-emerald-400 pl-3">
+              <div class="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
+                <span>Cash Capital</span>
+                <i class="fa-solid fa-wallet text-emerald-400 text-sm"></i>
+              </div>
+              <div id="cardCashBalance" class="text-xl font-black text-emerald-400">RM 0.00</div>
+              <p class="text-[10px] text-slate-500">Remaining Cash in Hand</p>
+            </div>
+
+            <!-- Bottom Section: QR e-Wallet -->
+            <div class="space-y-1.5 border-l-4 border-l-purple-500 pl-3">
+              <div class="flex items-center justify-between text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
+                <span>QR e-Wallet</span>
+                <i class="fa-solid fa-qrcode text-purple-400 text-sm"></i>
+              </div>
+              <div id="cardQrBalance" class="text-xl font-black text-purple-400">RM 0.00</div>
+              <p class="text-[10px] text-slate-500">Remaining e-Wallet Balance</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- QUICK ACTION BUTTONS BAR -->
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900 p-4 rounded-2xl border border-slate-800">
+          <div class="flex items-center gap-3">
+            <button onclick="openAddExpenseModal()" class="bg-red-500 hover:bg-red-600 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition flex items-center gap-2 shadow-lg shadow-red-500/20">
+              <i class="fa-solid fa-minus-circle"></i> Add Expense
+            </button>
+          </div>
+
+          <button onclick="openPresetManagerModal()" class="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 px-4 py-2.5 rounded-xl text-xs font-semibold transition flex items-center gap-2">
+            <i class="fa-solid fa-sliders"></i> Manage Presets
+          </button>
+        </div>
+
+        <!-- FAST POST-SALARY EXPENSE PRESETS GRID -->
+        <div class="glass-card p-6 rounded-2xl space-y-4">
+          <div>
+            <h3 class="font-bold text-white text-base flex items-center gap-2">
+              <i class="fa-solid fa-bolt text-amber-400"></i> Fast Post-Salary Expense Commitments
+            </h3>
+            <p class="text-xs text-slate-400">Tap any preset shortcut to open confirmation preview before logging</p>
+          </div>
+          <div id="fastPresetsContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- SALARY DEDUCTION % ANALYTICS & CHARTS -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="glass-card p-6 rounded-2xl space-y-4 lg:col-span-2">
+            <div>
+              <h3 class="font-bold text-white text-base flex items-center gap-2">
+                <i class="fa-solid fa-percent text-amber-400"></i> Salary Deduction Breakdown (%)
+              </h3>
+              <p class="text-xs text-slate-400">Exact percentage deducted from credited salary per logged item</p>
+            </div>
+            <div id="salaryDeductionBarList" class="space-y-3 max-h-[350px] overflow-y-auto custom-scrollbar pr-2">
+              <!-- Dynamically populated from actual logs -->
+            </div>
+          </div>
+
+          <div class="glass-card p-6 rounded-2xl space-y-4 flex flex-col justify-between">
+            <div>
+              <h3 class="font-bold text-white text-base flex items-center gap-2">
+                <i class="fa-solid fa-chart-donut text-amber-400"></i> Monthly Distribution
+              </h3>
+              <p class="text-xs text-slate-400">Expenses vs Remaining Unallocated Capital</p>
+            </div>
+            <div class="w-full max-w-[220px] mx-auto py-2">
+              <canvas id="monthlyDonutChart"></canvas>
+            </div>
+            <div class="text-center pt-2 border-t border-slate-800">
+              <span class="text-xs text-slate-400">Remaining Balance:</span>
+              <span id="donutRemainingText" class="text-sm font-bold text-amber-400 ml-1.5">RM 0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRANSACTIONS HISTORY LEDGER TABLE -->
+        <div class="glass-card p-6 rounded-2xl space-y-4">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="font-bold text-white text-base flex items-center gap-2">
+                <i class="fa-solid fa-list-check text-amber-400"></i> Monthly Ledger Transactions
+              </h3>
+              <p class="text-xs text-slate-400">Itemized log of all incoming salary and outgoing expenses</p>
+            </div>
+            <input type="text" id="transactionSearchInput" oninput="renderDashboard()" placeholder="Search description..." class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500 w-full sm:w-48">
+          </div>
+
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-900 text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800">
+                <tr>
+                  <th class="p-3">Date</th>
+                  <th class="p-3">Description</th>
+                  <th class="p-3">Category</th>
+                  <th class="p-3">Account</th>
+                  <th class="p-3">Amount</th>
+                  <th class="p-3">% of Salary</th>
+                  <th class="p-3 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="transactionTableBody" class="divide-y divide-slate-800/60">
+                <!-- Rows dynamically rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== VIEW 2: MONTHLY REPORTS ==================== -->
+      <div id="tabReportsView" class="hidden space-y-6">
+        <div class="glass-card p-6 rounded-2xl space-y-4">
+          <div>
+            <h3 class="font-bold text-white text-lg flex items-center gap-2">
+              <i class="fa-solid fa-book-bookmark text-amber-400"></i> Historical Monthly Ledger Drill-Down
+            </h3>
+            <p class="text-xs text-slate-400">Review and compare past salary logs, expenses, and savings stats side-by-side</p>
+          </div>
+          <div id="monthlyReportsHistoryContainer" class="space-y-4"></div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900/60 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+      Executive Finance & Salary Ledger &copy; 2026. Secure Local & Cloud Storage.
+    </footer>
+  </div>
+
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. ADMIN AUTHENTICATION MODAL -->
+  <div id="adminAuthModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
+    <div class="glass-card gold-border w-full max-w-sm p-6 rounded-2xl space-y-4 shadow-2xl text-center">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-amber-400 text-base flex items-center gap-2">
+          <i class="fa-solid fa-shield-halved"></i> Admin Authentication
+        </h3>
+        <button onclick="closeAdminAuthModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="text-xs text-slate-300">Enter Admin PIN continuously.</p>
+      
+      <form id="adminAuthForm" class="space-y-4" onsubmit="handleAdminAuthSubmit(event)">
+        <div class="flex justify-center gap-2 my-3" id="adminPinGroup">
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-12 !h-12 !text-base" data-index="0" oninput="handlePinInput(event, 'adminPinGroup')" onkeydown="handlePinKeyDown(event, 'adminPinGroup')" autocomplete="off" required>
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-12 !h-12 !text-base" data-index="1" oninput="handlePinInput(event, 'adminPinGroup')" onkeydown="handlePinKeyDown(event, 'adminPinGroup')" autocomplete="off" required>
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-12 !h-12 !text-base" data-index="2" oninput="handlePinInput(event, 'adminPinGroup')" onkeydown="handlePinKeyDown(event, 'adminPinGroup')" autocomplete="off" required>
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-12 !h-12 !text-base" data-index="3" oninput="handlePinInput(event, 'adminPinGroup')" onkeydown="handlePinKeyDown(event, 'adminPinGroup')" autocomplete="off" required>
+        </div>
+        <div id="adminAuthError" class="hidden text-xs text-red-400 text-center font-semibold bg-red-950/50 p-2 rounded">
+          Incorrect Admin PIN.
+        </div>
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">
+          Unlock Admin Portal
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. ADMIN CREDIT INCOME MODAL -->
+  <div id="adminIncomeModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
+    <div class="glass-card border border-emerald-500/30 w-full max-w-md p-6 rounded-2xl space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-emerald-400 text-base flex items-center gap-2">
+          <i class="fa-solid fa-money-bill-trend-up"></i> Admin: Credit Salary / Income
+        </h3>
+        <button onclick="closeAdminIncomeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="adminIncomeForm" class="space-y-4 text-xs" onsubmit="handleAdminIncomeSubmit(event)">
+        <div>
+          <label class="block font-semibold uppercase text-slate-400 mb-1">Income Description</label>
+          <input type="text" id="incDesc" required value="Monthly Salary" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold uppercase text-slate-400 mb-1">Amount (RM)</label>
+            <input type="number" id="incAmount" required step="0.01" min="1" placeholder="3500.00" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500 font-bold">
+          </div>
+          <div>
+            <label class="block font-semibold uppercase text-slate-400 mb-1">Deposit To</label>
+            <select id="incAccount" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+              <option value="Bank">Bank Account</option>
+              <option value="Cash">Cash in Hand</option>
+              <option value="QR">QR e-Wallet</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold uppercase text-slate-400 mb-1">Date</label>
+          <input type="date" id="incDate" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-lg shadow-emerald-500/20">
+          <i class="fa-solid fa-check"></i> Record Income Capital
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. ADD EXPENSE MODAL -->
+  <div id="addExpenseModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
+    <div class="glass-card border border-red-500/30 w-full max-w-md p-6 rounded-2xl space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-red-400 text-base flex items-center gap-2">
+          <i class="fa-solid fa-receipt"></i> Log Expense Entry
+        </h3>
+        <button onclick="closeAddExpenseModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="addExpenseForm" class="space-y-4 text-xs" onsubmit="handleAddExpenseSubmit(event)">
+        <div>
+          <label class="block font-semibold uppercase text-slate-400 mb-1">Expense Item Name</label>
+          <input type="text" id="expDesc" required placeholder="e.g. Car Loan / Rental / Coway / F&B" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-red-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold uppercase text-slate-400 mb-1">Amount (RM)</label>
+            <input type="number" id="expAmount" required step="0.01" min="0.01" placeholder="150.00" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-red-500 font-bold">
+          </div>
+          <div>
+            <label class="block font-semibold uppercase text-slate-400 mb-1">Paid Via</label>
+            <select id="expAccount" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-red-500">
+              <option value="Bank">Bank</option>
+              <option value="Cash">Cash</option>
+              <option value="QR">QR</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold uppercase text-slate-400 mb-1">Category</label>
+            <select id="expCategory" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-red-500">
+              <option value="Rental">Rental & Housing</option>
+              <option value="Vehicle Loans">Vehicle Loans (Car/Motor)</option>
+              <option value="Household & Family">Family & Meds (Father/Mother/Coway)</option>
+              <option value="Bills & Utilities">Bills & Utilities (Water/Elec)</option>
+              <option value="Petrol & Fuel">Petrol & Fuel</option>
+              <option value="F&B & Outing">F&B & Dining</option>
+              <option value="Festive Special">Festive / Deepavali</option>
+              <option value="Personal Extra">Personal / General</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold uppercase text-slate-400 mb-1">Date</label>
+            <input type="date" id="expDate" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-red-500">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl text-xs transition shadow-lg shadow-red-500/20">
+          <i class="fa-solid fa-minus-circle"></i> Log & Deduct Expense
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. PIN CONFIRMATION DELETION MODAL -->
+  <div id="pinDeleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
+    <div class="glass-card gold-border w-full max-w-xs p-6 rounded-2xl space-y-4 shadow-2xl text-center">
+      <div class="w-12 h-12 mx-auto rounded-full bg-red-500/20 text-red-400 flex items-center justify-center text-xl border border-red-500/30">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <h3 class="font-bold text-white text-base">Confirm Deletion</h3>
+        <p class="text-xs text-slate-400 mt-1">Enter Admin PIN continuously</p>
+      </div>
+
+      <form id="pinDeleteForm" class="space-y-3" onsubmit="handlePinDeleteSubmit(event)">
+        <div class="flex justify-center gap-2 my-2" id="deletePinGroup">
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-10 !h-10 !text-sm" data-index="0" oninput="handlePinInput(event, 'deletePinGroup')" onkeydown="handlePinKeyDown(event, 'deletePinGroup')" autocomplete="off" required>
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-10 !h-10 !text-sm" data-index="1" oninput="handlePinInput(event, 'deletePinGroup')" onkeydown="handlePinKeyDown(event, 'deletePinGroup')" autocomplete="off" required>
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-10 !h-10 !text-sm" data-index="2" oninput="handlePinInput(event, 'deletePinGroup')" onkeydown="handlePinKeyDown(event, 'deletePinGroup')" autocomplete="off" required>
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-10 !h-10 !text-sm" data-index="3" oninput="handlePinInput(event, 'deletePinGroup')" onkeydown="handlePinKeyDown(event, 'deletePinGroup')" autocomplete="off" required>
+        </div>
+        <div id="deletePinError" class="hidden text-[11px] text-red-400 font-semibold">Incorrect PIN. Access Denied.</div>
+        <div class="flex gap-2">
+          <button type="button" onclick="closePinDeleteModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2 rounded-xl text-xs">Cancel</button>
+          <button type="submit" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-xl text-xs">Confirm Delete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. PRESET CONFIRMATION MODAL -->
+  <div id="presetConfirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
+    <div class="glass-card gold-border w-full max-w-sm p-6 rounded-2xl space-y-4 shadow-2xl text-center">
+      <div class="w-12 h-12 mx-auto rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl border border-amber-500/30">
+        <i class="fa-solid fa-bolt"></i>
+      </div>
+      <div>
+        <h3 class="font-bold text-white text-base">Confirm Commitment Log</h3>
+        <p class="text-xs text-slate-400 mt-1">Review preset details before deducting from capital:</p>
+      </div>
+      
+      <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 text-left space-y-1.5 text-xs">
+        <div class="flex justify-between"><span class="text-slate-400">Commitment:</span> <span id="confPresetTitle" class="font-bold text-white">Car Loan</span></div>
+        <div class="flex justify-between"><span class="text-slate-400">Amount:</span> <span id="confPresetAmount" class="font-bold text-amber-400">RM 0.00</span></div>
+        <div class="flex justify-between"><span class="text-slate-400">Payment Account:</span> <span id="confPresetAccount" class="font-bold text-blue-400">Bank</span></div>
+      </div>
+
+      <div class="flex gap-2">
+        <button type="button" onclick="closePresetConfirmModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2.5 rounded-xl text-xs">Cancel</button>
+        <button type="button" onclick="executePresetExpense()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs shadow-lg shadow-amber-500/20">Confirm & Log</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. PRESET MANAGER MODAL -->
+  <div id="presetManagerModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
+    <div class="glass-card border border-slate-700 w-full max-w-lg p-6 rounded-2xl space-y-4 shadow-2xl max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-amber-400 text-base flex items-center gap-2">
+          <i class="fa-solid fa-sliders"></i> Fast Expense Presets Manager
+        </h3>
+        <button onclick="closePresetManagerModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="newPresetForm" class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-3 text-xs" onsubmit="handleCreatePresetSubmit(event)">
+        <span class="font-bold text-slate-300 block border-b border-slate-800 pb-1">+ Create New Custom Preset</span>
+        <div class="grid grid-cols-2 gap-2">
+          <input type="text" id="npTitle" placeholder="Preset Name (e.g. WiFi)" required class="bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+          <input type="number" id="npAmount" placeholder="Default Amount (RM)" step="0.01" required class="bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-bold">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <select id="npAccount" class="bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+            <option value="Bank">Pay via Bank</option>
+            <option value="Cash">Pay via Cash</option>
+            <option value="QR">Pay via QR</option>
+          </select>
+          <select id="npCategory" class="bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+            <option value="Rental">Rental & Housing</option>
+            <option value="Vehicle Loans">Vehicle Loans</option>
+            <option value="Household & Family">Family & Meds</option>
+            <option value="Bills & Utilities">Bills & Utilities</option>
+            <option value="Petrol & Fuel">Petrol & Fuel</option>
+            <option value="F&B & Outing">F&B & Outing</option>
+            <option value="Festive Special">Festive Special</option>
+            <option value="Personal Extra">Personal Extra</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2 rounded-lg transition">Save New Preset Shortcut</button>
+      </form>
+
+      <div id="presetListContainer" class="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1 text-xs"></div>
+    </div>
+  </div>
+
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    const USER_CREDENTIALS = { email: "kyugayg1@gmail.com", pin: "1234" };
+    const ADMIN_CREDENTIALS = { pin: "1233" };
+
+    let currentUser = null;
+    let isAdminUnlocked = false;
+    let pendingDeleteTxId = null;
+    let activePresetToLog = null;
+
+    let selectedYear = 2026;
+    let selectedMonth = 10; // November
+
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    const defaultPresets = [
+      { id: 'p1', title: 'Car Loan', amount: 500, account: 'Bank', category: 'Vehicle Loans', icon: 'fa-car' },
+      { id: 'p2', title: 'Motorbike', amount: 180, account: 'Bank', category: 'Vehicle Loans', icon: 'fa-motorcycle' },
+      { id: 'p3', title: 'House Rent', amount: 900, account: 'Bank', category: 'Rental', icon: 'fa-house' },
+      { id: 'p4', title: 'Electricity', amount: 120, account: 'QR', category: 'Bills & Utilities', icon: 'fa-bolt' },
+      { id: 'p5', title: 'Water Bill', amount: 35, account: 'QR', category: 'Bills & Utilities', icon: 'fa-droplet' },
+      { id: 'p6', title: 'Coway Water', amount: 95, account: 'Bank', category: 'Household & Family', icon: 'fa-glass-water' },
+      { id: 'p7', title: 'Father Meds', amount: 200, account: 'Cash', category: 'Household & Family', icon: 'fa-pills' },
+      { id: 'p8', title: 'Father Exp', amount: 300, account: 'Bank', category: 'Household & Family', icon: 'fa-user-tie' },
+      { id: 'p9', title: 'Mother Exp', amount: 300, account: 'Bank', category: 'Household & Family', icon: 'fa-heart' },
+      { id: 'p10', title: 'Petrol', amount: 150, account: 'QR', category: 'Petrol & Fuel', icon: 'fa-gas-pump' },
+      { id: 'p11', title: 'F&B Outing', amount: 80, account: 'QR', category: 'F&B & Outing', icon: 'fa-utensils' },
+      { id: 'p12', title: 'Deepavali', amount: 350, account: 'Bank', category: 'Festive Special', icon: 'fa-wand-magic-sparkles' }
+    ];
+
+    let presets = [];
+    let transactions = [];
+    let donutChartInstance = null;
+
+    const STORAGE_KEY_TRANSACTIONS = 'exec_finance_txs_v8';
+    const STORAGE_KEY_PRESETS = 'exec_finance_presets_v8';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadStorageData();
+      initDateInputs();
+    });
+
+    // Fully reliable standalone multi-box pin input handler
+    function handlePinInput(e, containerId) {
+      const input = e.target;
+      const val = input.value.replace(/[^0-9]/g, '');
+      input.value = val;
+
+      if (val && input.nextElementSibling) {
+        input.nextElementSibling.focus();
+      }
+    }
+
+    function handlePinKeyDown(e, containerId) {
+      const input = e.target;
+      if (e.key === 'Backspace' && !input.value && input.previousElementSibling) {
+        input.previousElementSibling.focus();
+        input.previousElementSibling.value = '';
+      }
+    }
+
+    function getPinValue(containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return '';
+      const inputs = container.querySelectorAll('.pin-digit-input');
+      let pin = '';
+      inputs.forEach(i => pin += i.value);
+      return pin;
+    }
+
+    function clearPinInputs(containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.querySelectorAll('.pin-digit-input').forEach(i => i.value = '');
+      const first = container.querySelector('.pin-digit-input');
+      if (first) first.focus();
+    }
+
+    function loadStorageData() {
+      const savedTx = localStorage.getItem(STORAGE_KEY_TRANSACTIONS);
+      transactions = savedTx ? JSON.parse(savedTx) : [];
+      const savedPresets = localStorage.getItem(STORAGE_KEY_PRESETS);
+      presets = savedPresets ? JSON.parse(savedPresets) : [...defaultPresets];
+    }
+
+    function saveStorageData() {
+      localStorage.setItem(STORAGE_KEY_TRANSACTIONS, JSON.stringify(transactions));
+      localStorage.setItem(STORAGE_KEY_PRESETS, JSON.stringify(presets));
+    }
+
+    function initDateInputs() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('incDate').value = today;
+      document.getElementById('expDate').value = today;
+    }
+
+    function handleUserLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('userEmailInput').value.trim();
+      const pin = getPinValue('userPinGroup');
+
+      if (email.toLowerCase() === USER_CREDENTIALS.email.toLowerCase() && pin === USER_CREDENTIALS.pin) {
+        currentUser = email;
+        document.getElementById('currentUserDisplay').innerText = currentUser;
+        document.getElementById('userLockScreen').classList.add('hidden');
+        document.getElementById('appContainer').classList.remove('hidden');
+        renderDashboard();
+      } else {
+        document.getElementById('userLoginError').classList.remove('hidden');
+        clearPinInputs('userPinGroup');
+      }
+    }
+
+    function logoutUser() {
+      currentUser = null;
+      isAdminUnlocked = false;
+      updateAdminBadge();
+      clearPinInputs('userPinGroup');
+      document.getElementById('appContainer').classList.add('hidden');
+      document.getElementById('userLockScreen').classList.remove('hidden');
+    }
+
+    function openAdminAuthModal() {
+      if (isAdminUnlocked) {
+        isAdminUnlocked = false;
+        updateAdminBadge();
+        return;
+      }
+      clearPinInputs('adminPinGroup');
+      document.getElementById('adminAuthError').classList.add('hidden');
+      document.getElementById('adminAuthModal').classList.remove('hidden');
+    }
+
+    function closeAdminAuthModal() {
+      document.getElementById('adminAuthModal').classList.add('hidden');
+    }
+
+    function handleAdminAuthSubmit(e) {
+      e.preventDefault();
+      const pass = getPinValue('adminPinGroup');
+      if (pass === ADMIN_CREDENTIALS.pin) {
+        isAdminUnlocked = true;
+        updateAdminBadge();
+        closeAdminAuthModal();
+        openAdminIncomeModal();
+      } else {
+        document.getElementById('adminAuthError').classList.remove('hidden');
+        clearPinInputs('adminPinGroup');
+      }
+    }
+
+    function updateAdminBadge() {
+      const badge = document.getElementById('adminBadge');
+      const btnText = document.getElementById('adminBtnText');
+      const btn = document.getElementById('adminPortalBtn');
+
+      if (isAdminUnlocked) {
+        badge.classList.remove('hidden');
+        btnText.innerText = 'Lock Admin';
+        btn.classList.replace('text-amber-400', 'text-emerald-400');
+        btn.classList.replace('border-amber-500/30', 'border-emerald-500/30');
+      } else {
+        badge.classList.add('hidden');
+        btnText.innerText = 'Admin Portal';
+        btn.classList.replace('text-emerald-400', 'text-amber-400');
+        btn.classList.replace('border-emerald-500/30', 'border-amber-500/30');
+      }
+    }
+
+    function changeMonth(delta) {
+      selectedMonth += delta;
+      if (selectedMonth > 11) {
+        selectedMonth = 0;
+        selectedYear++;
+      } else if (selectedMonth < 0) {
+        selectedMonth = 11;
+        selectedYear--;
+      }
+      renderDashboard();
+    }
+
+    function switchMainTab(tab) {
+      const dashTab = document.getElementById('tabDashboardView');
+      const repTab = document.getElementById('tabReportsView');
+      const btnDash = document.getElementById('viewDashboardTabBtn');
+      const btnRep = document.getElementById('viewReportsTabBtn');
+
+      if (tab === 'dashboard') {
+        dashTab.classList.remove('hidden');
+        repTab.classList.add('hidden');
+        btnDash.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 transition shadow-md";
+        btnRep.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition";
+      } else {
+        dashTab.classList.add('hidden');
+        repTab.classList.remove('hidden');
+        btnRep.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-semibold bg-amber-500 text-slate-950 transition shadow-md";
+        btnDash.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition";
+        renderReports();
+      }
+    }
+
+    function renderDashboard() {
+      document.getElementById('currentMonthYearDisplay').innerText = `${monthNames[selectedMonth]} ${selectedYear}`;
+
+      const monthTx = transactions.filter(t => {
+        const d = new Date(t.date);
+        return d.getFullYear() === selectedYear && d.getMonth() === selectedMonth;
+      });
+
+      let totalIncome = 0;
+      let totalExpense = 0;
+      let bankCapital = 0;
+      let cashCapital = 0;
+      let qrCapital = 0;
+
+      monthTx.forEach(t => {
+        if (t.type === 'income') {
+          totalIncome += t.amount;
+          if (t.account === 'Bank') bankCapital += t.amount;
+          if (t.account === 'Cash') cashCapital += t.amount;
+          if (t.account === 'QR') qrCapital += t.amount;
+        } else {
+          totalExpense += t.amount;
+          if (t.account === 'Bank') bankCapital -= t.amount;
+          if (t.account === 'Cash') cashCapital -= t.amount;
+          if (t.account === 'QR') qrCapital -= t.amount;
+        }
+      });
+
+      document.getElementById('cardTotalIncome').innerText = `RM ${totalIncome.toFixed(2)}`;
+      document.getElementById('cardBankBalance').innerText = `RM ${bankCapital.toFixed(2)}`;
+      document.getElementById('cardCashBalance').innerText = `RM ${cashCapital.toFixed(2)}`;
+      document.getElementById('cardQrBalance').innerText = `RM ${qrCapital.toFixed(2)}`;
+
+      renderFastPresets();
+      renderSalaryDeductionBars(monthTx, totalIncome);
+      renderDonutChart(totalIncome, totalExpense);
+      renderTransactionTable(monthTx, totalIncome);
+    }
+
+    function renderFastPresets() {
+      const container = document.getElementById('fastPresetsContainer');
+      container.innerHTML = '';
+
+      presets.forEach(p => {
+        const btn = document.createElement('button');
+        btn.onclick = () => promptPresetConfirmation(p);
+        btn.className = "bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/40 p-3 rounded-xl text-left transition space-y-1.5 group flex flex-col justify-between";
+
+        let acctBadgeColor = p.account === 'Bank' ? 'text-blue-400 bg-blue-500/10' : p.account === 'Cash' ? 'text-emerald-400 bg-emerald-500/10' : 'text-purple-400 bg-purple-500/10';
+
+        btn.innerHTML = `
+          <div class="flex items-center justify-between w-full">
+            <i class="fa-solid ${p.icon || 'fa-receipt'} text-amber-400 group-hover:scale-110 transition"></i>
+            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${acctBadgeColor}">${p.account}</span>
+          </div>
+          <div>
+            <div class="font-bold text-slate-200 text-xs truncate">${p.title}</div>
+            <div class="font-extrabold text-amber-400 text-xs">RM ${p.amount.toFixed(2)}</div>
+          </div>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    function promptPresetConfirmation(preset) {
+      activePresetToLog = preset;
+      document.getElementById('confPresetTitle').innerText = preset.title;
+      document.getElementById('confPresetAmount').innerText = `RM ${preset.amount.toFixed(2)}`;
+      document.getElementById('confPresetAccount').innerText = preset.account;
+      document.getElementById('presetConfirmModal').classList.remove('hidden');
+    }
+
+    function closePresetConfirmModal() {
+      activePresetToLog = null;
+      document.getElementById('presetConfirmModal').classList.add('hidden');
+    }
+
+    function executePresetExpense() {
+      if (!activePresetToLog) return;
+      const today = new Date().toISOString().split('T')[0];
+      const newTx = {
+        id: 'tx_' + Date.now(),
+        type: 'expense',
+        description: activePresetToLog.title,
+        amount: activePresetToLog.amount,
+        account: activePresetToLog.account,
+        category: activePresetToLog.category,
+        date: today
+      };
+
+      transactions.push(newTx);
+      saveStorageData();
+      closePresetConfirmModal();
+      renderDashboard();
+    }
+
+    function renderSalaryDeductionBars(monthTx, totalIncome) {
+      const list = document.getElementById('salaryDeductionBarList');
+      list.innerHTML = '';
+
+      const expenses = monthTx.filter(t => t.type === 'expense');
+
+      if (expenses.length === 0) {
+        list.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">No expenses logged for this month yet.</p>`;
+        return;
+      }
+
+      expenses.forEach(exp => {
+        const pct = totalIncome > 0 ? ((exp.amount / totalIncome) * 100).toFixed(1) : '0.0';
+        const row = document.createElement('div');
+        row.className = "bg-slate-900/80 p-3 rounded-xl border border-slate-800 space-y-1.5";
+        row.innerHTML = `
+          <div class="flex items-center justify-between text-xs">
+            <div class="font-bold text-slate-200">${exp.description} <span class="text-[10px] text-slate-400 font-normal">(${exp.category})</span></div>
+            <div class="font-extrabold text-amber-400">RM ${exp.amount.toFixed(2)} <span class="text-[10px] text-slate-400 font-normal">(${pct}%)</span></div>
+          </div>
+          <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+            <div class="bg-gradient-to-r from-amber-500 to-amber-300 h-full rounded-full transition-all duration-500" style="width: ${Math.min(pct, 100)}%"></div>
+          </div>
+        `;
+        list.appendChild(row);
+      });
+    }
+
+    function renderDonutChart(totalIncome, totalExpense) {
+      const ctx = document.getElementById('monthlyDonutChart').getContext('2d');
+      const remaining = Math.max(0, totalIncome - totalExpense);
+
+      document.getElementById('donutRemainingText').innerText = `RM ${remaining.toFixed(2)}`;
+
+      if (donutChartInstance) donutChartInstance.destroy();
+
+      donutChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Spent', 'Unallocated Capital'],
+          datasets: [{
+            data: [totalExpense, remaining],
+            backgroundColor: ['#ef4444', '#f59e0b'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: { legend: { display: false } },
+          cutout: '75%'
+        }
+      });
+    }
+
+    function renderTransactionTable(monthTx, totalIncome) {
+      const tbody = document.getElementById('transactionTableBody');
+      const search = document.getElementById('transactionSearchInput').value.toLowerCase();
+      tbody.innerHTML = '';
+
+      const filtered = monthTx.filter(t => t.description.toLowerCase().includes(search));
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-500">No transactions recorded for this month.</td></tr>`;
+        return;
+      }
+
+      filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(t => {
+        const isInc = t.type === 'income';
+        const pct = (!isInc && totalIncome > 0) ? ((t.amount / totalIncome) * 100).toFixed(1) + '%' : '-';
+        let acctBadge = t.account === 'Bank' ? 'bg-blue-500/10 text-blue-400' : t.account === 'Cash' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-purple-500/10 text-purple-400';
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-900/50 transition";
+        tr.innerHTML = `
+          <td class="p-3 text-slate-400">${t.date}</td>
+          <td class="p-3 font-semibold text-slate-200">${t.description}</td>
+          <td class="p-3 text-slate-400">${t.category || 'Salary'}</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${acctBadge}">${t.account}</span></td>
+          <td class="p-3 font-bold ${isInc ? 'text-emerald-400' : 'text-red-400'}">${isInc ? '+' : '-'} RM ${t.amount.toFixed(2)}</td>
+          <td class="p-3 text-slate-400 font-medium">${pct}</td>
+          <td class="p-3 text-right">
+            <button onclick="requestDeleteTx('${t.id}')" class="text-slate-500 hover:text-red-400 transition"><i class="fa-solid fa-trash-can"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openAdminIncomeModal() {
+      document.getElementById('adminIncomeModal').classList.remove('hidden');
+    }
+    function closeAdminIncomeModal() {
+      document.getElementById('adminIncomeModal').classList.add('hidden');
+    }
+    function handleAdminIncomeSubmit(e) {
+      e.preventDefault();
+      const desc = document.getElementById('incDesc').value.trim();
+      const amount = parseFloat(document.getElementById('incAmount').value);
+      const account = document.getElementById('incAccount').value;
+      const date = document.getElementById('incDate').value;
+
+      transactions.push({
+        id: 'tx_' + Date.now(),
+        type: 'income',
+        description: desc,
+        amount: amount,
+        account: account,
+        category: 'Salary Capital',
+        date: date
+      });
+
+      saveStorageData();
+      closeAdminIncomeModal();
+      renderDashboard();
+    }
+
+    function openAddExpenseModal() {
+      document.getElementById('addExpenseModal').classList.remove('hidden');
+    }
+    function closeAddExpenseModal() {
+      document.getElementById('addExpenseModal').classList.add('hidden');
+    }
+    function handleAddExpenseSubmit(e) {
+      e.preventDefault();
+      const desc = document.getElementById('expDesc').value.trim();
+      const amount = parseFloat(document.getElementById('expAmount').value);
+      const account = document.getElementById('expAccount').value;
+      const category = document.getElementById('expCategory').value;
+      const date = document.getElementById('expDate').value;
+
+      transactions.push({
+        id: 'tx_' + Date.now(),
+        type: 'expense',
+        description: desc,
+        amount: amount,
+        account: account,
+        category: category,
+        date: date
+      });
+
+      saveStorageData();
+      closeAddExpenseModal();
+      renderDashboard();
+    }
+
+    function requestDeleteTx(id) {
+      pendingDeleteTxId = id;
+      clearPinInputs('deletePinGroup');
+      document.getElementById('deletePinError').classList.add('hidden');
+      document.getElementById('pinDeleteModal').classList.remove('hidden');
+    }
+    function closePinDeleteModal() {
+      pendingDeleteTxId = null;
+      document.getElementById('pinDeleteModal').classList.add('hidden');
+    }
+    function handlePinDeleteSubmit(e) {
+      e.preventDefault();
+      const pin = getPinValue('deletePinGroup');
+      if (pin === ADMIN_CREDENTIALS.pin) {
+        transactions = transactions.filter(t => t.id !== pendingDeleteTxId);
+        saveStorageData();
+        closePinDeleteModal();
+        renderDashboard();
+      } else {
+        document.getElementById('deletePinError').classList.remove('hidden');
+        clearPinInputs('deletePinGroup');
+      }
+    }
+
+    function openPresetManagerModal() {
+      renderPresetList();
+      document.getElementById('presetManagerModal').classList.remove('hidden');
+    }
+    function closePresetManagerModal() {
+      document.getElementById('presetManagerModal').classList.add('hidden');
+    }
+    function renderPresetList() {
+      const container = document.getElementById('presetListContainer');
+      container.innerHTML = '';
+      presets.forEach(p => {
+        const item = document.createElement('div');
+        item.className = "flex items-center justify-between bg-slate-900 p-2.5 rounded-lg border border-slate-800";
+        item.innerHTML = `
+          <div>
+            <span class="font-bold text-white">${p.title}</span>
+            <span class="text-amber-400 font-bold ml-2">RM ${p.amount.toFixed(2)}</span>
+            <span class="text-[10px] text-slate-400 block">${p.account} • ${p.category}</span>
+          </div>
+          <button onclick="deletePreset('${p.id}')" class="text-slate-500 hover:text-red-400 transition p-1"><i class="fa-solid fa-trash"></i></button>
+        `;
+        container.appendChild(item);
+      });
+    }
+    function handleCreatePresetSubmit(e) {
+      e.preventDefault();
+      const title = document.getElementById('npTitle').value.trim();
+      const amount = parseFloat(document.getElementById('npAmount').value);
+      const account = document.getElementById('npAccount').value;
+      const category = document.getElementById('npCategory').value;
+
+      presets.push({
+        id: 'p_' + Date.now(),
+        title: title,
+        amount: amount,
+        account: account,
+        category: category,
+        icon: 'fa-receipt'
+      });
+
+      saveStorageData();
+      renderPresetList();
+      renderFastPresets();
+      document.getElementById('newPresetForm').reset();
+    }
+    function deletePreset(id) {
+      presets = presets.filter(p => p.id !== id);
+      saveStorageData();
+      renderPresetList();
+      renderFastPresets();
+    }
+
+    function renderReports() {
+      const container = document.getElementById('monthlyReportsHistoryContainer');
+      container.innerHTML = '';
+
+      const groups = {};
+      transactions.forEach(t => {
+        const d = new Date(t.date);
+        const key = `${d.getFullYear()}-${d.getMonth()}`;
+        if (!groups[key]) groups[key] = { year: d.getFullYear(), month: d.getMonth(), income: 0, expense: 0, txs: [] };
+        if (t.type === 'income') groups[key].income += t.amount;
+        else groups[key].expense += t.amount;
+        groups[key].txs.push(t);
+      });
+
+      const keys = Object.keys(groups).sort().reverse();
+      if (keys.length === 0) {
+        container.innerHTML = `<p class="text-center text-slate-500 text-xs py-8">No historical entries found yet.</p>`;
+        return;
+      }
+
+      keys.forEach(k => {
+        const g = groups[k];
+        const net = g.income - g.expense;
+        const savedPct = g.income > 0 ? ((net / g.income) * 100).toFixed(1) : '0.0';
+
+        const card = document.createElement('div');
+        card.className = "bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3";
+        
+        let txRowsHtml = '';
+        g.txs.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(t => {
+          const isInc = t.type === 'income';
+          txRowsHtml += `
+            <div class="flex items-center justify-between text-xs bg-slate-950/60 p-2 rounded-lg border border-slate-800">
+              <div>
+                <span class="font-bold text-slate-200">${t.description}</span>
+                <span class="text-[10px] text-slate-400 block">${t.date} • ${t.category || t.account}</span>
+              </div>
+              <span class="font-bold ${isInc ? 'text-emerald-400' : 'text-red-400'}">${isInc ? '+' : '-'} RM ${t.amount.toFixed(2)}</span>
+            </div>
+          `;
+        });
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <h4 class="font-bold text-amber-400 text-sm">${monthNames[g.month]} ${g.year}</h4>
+            <span class="text-xs font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400">${savedPct}% Saved</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="bg-slate-950 p-2 rounded-lg"><span class="text-slate-400 block text-[10px]">INCOME</span><span class="font-bold text-emerald-400">RM ${g.income.toFixed(2)}</span></div>
+            <div class="bg-slate-950 p-2 rounded-lg"><span class="text-slate-400 block text-[10px]">SPENT</span><span class="font-bold text-red-400">RM ${g.expense.toFixed(2)}</span></div>
+            <div class="bg-slate-950 p-2 rounded-lg"><span class="text-slate-400 block text-[10px]">NET SAVINGS</span><span class="font-bold text-amber-400">RM ${net.toFixed(2)}</span></div>
+          </div>
+          <div class="space-y-1.5 pt-2 border-t border-slate-800/80">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Logged Entries (${g.txs.length})</span>
+            <div class="space-y-1.5 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
+              ${txRowsHtml}
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>
