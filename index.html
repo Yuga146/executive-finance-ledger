@@ -55,7 +55,6 @@
       background: #374151;
       border-radius: 4px;
     }
-    /* Standard interactive numeric pin inputs to guarantee 100% device keyboard reliability */
     .pin-digit-input {
       width: 56px;
       height: 56px;
@@ -96,18 +95,17 @@
         </div>
 
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">MR YUGA</label>
-          <!-- Robust 4 separate numeric input boxes with auto-advance and backspace support -->
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">4-Digit User PIN</label>
           <div class="flex justify-between gap-3" id="userPinGroup">
-            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input" data-index="0" oninput="handlePinInput(event, 'userPinGroup')" onkeydown="handlePinKeyDown(event, 'userPinGroup')" autocomplete="off" required>
-            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input" data-index="1" oninput="handlePinInput(event, 'userPinGroup')" onkeydown="handlePinKeyDown(event, 'userPinGroup')" autocomplete="off" required>
-            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input" data-index="2" oninput="handlePinInput(event, 'userPinGroup')" onkeydown="handlePinKeyDown(event, 'userPinGroup')" autocomplete="off" required>
-            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input" data-index="3" oninput="handlePinInput(event, 'userPinGroup')" onkeydown="handlePinKeyDown(event, 'userPinGroup')" autocomplete="off" required>
+            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input" data-index="0" oninput="handlePinInput(event)" onkeydown="handlePinKeyDown(event)" autocomplete="off" required>
+            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input" data-index="1" oninput="handlePinInput(event)" onkeydown="handlePinKeyDown(event)" autocomplete="off" required>
+            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input" data-index="2" oninput="handlePinInput(event)" onkeydown="handlePinKeyDown(event)" autocomplete="off" required>
+            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input" data-index="3" oninput="handlePinInput(event)" onkeydown="handlePinKeyDown(event)" autocomplete="off" required>
           </div>
         </div>
 
         <div id="userLoginError" class="hidden text-xs text-red-400 text-center font-medium bg-red-950/40 p-2.5 rounded-lg border border-red-800/40">
-          Invalid credentials. Please verify your email and PIN (1234).
+          Invalid credentials. Please verify your email and PIN.
         </div>
 
         <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3.5 rounded-xl transition duration-200 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
@@ -265,10 +263,10 @@
               <h3 class="font-bold text-white text-base flex items-center gap-2">
                 <i class="fa-solid fa-percent text-amber-400"></i> Salary Deduction Breakdown (%)
               </h3>
-              <p class="text-xs text-slate-400">Exact percentage deducted from credited salary per logged item</p>
+              <p class="text-xs text-slate-400">Exact percentage deducted from credited salary per grouped category</p>
             </div>
             <div id="salaryDeductionBarList" class="space-y-3 max-h-[350px] overflow-y-auto custom-scrollbar pr-2">
-              <!-- Dynamically populated from actual logs -->
+              <!-- Dynamically populated from grouped category sums -->
             </div>
           </div>
 
@@ -360,10 +358,10 @@
       
       <form id="adminAuthForm" class="space-y-4" onsubmit="handleAdminAuthSubmit(event)">
         <div class="flex justify-center gap-2 my-3" id="adminPinGroup">
-          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-12 !h-12 !text-base" data-index="0" oninput="handlePinInput(event, 'adminPinGroup')" onkeydown="handlePinKeyDown(event, 'adminPinGroup')" autocomplete="off" required>
-          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-12 !h-12 !text-base" data-index="1" oninput="handlePinInput(event, 'adminPinGroup')" onkeydown="handlePinKeyDown(event, 'adminPinGroup')" autocomplete="off" required>
-          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-12 !h-12 !text-base" data-index="2" oninput="handlePinInput(event, 'adminPinGroup')" onkeydown="handlePinKeyDown(event, 'adminPinGroup')" autocomplete="off" required>
-          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-12 !h-12 !text-base" data-index="3" oninput="handlePinInput(event, 'adminPinGroup')" onkeydown="handlePinKeyDown(event, 'adminPinGroup')" autocomplete="off" required>
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-12 !h-12 !text-base" data-index="0" oninput="handlePinInput(event)" onkeydown="handlePinKeyDown(event)" autocomplete="off" required>
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-12 !h-12 !text-base" data-index="1" oninput="handlePinInput(event)" onkeydown="handlePinKeyDown(event)" autocomplete="off" required>
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-12 !h-12 !text-base" data-index="2" oninput="handlePinInput(event)" onkeydown="handlePinKeyDown(event)" autocomplete="off" required>
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-12 !h-12 !text-base" data-index="3" oninput="handlePinInput(event)" onkeydown="handlePinKeyDown(event)" autocomplete="off" required>
         </div>
         <div id="adminAuthError" class="hidden text-xs text-red-400 text-center font-semibold bg-red-950/50 p-2 rounded">
           Incorrect Admin PIN.
@@ -418,7 +416,7 @@
     </div>
   </div>
 
-  <!-- 3. ADD EXPENSE MODAL -->
+  <!-- 3. ADD EXPENSE MODAL (Supports custom user-defined categories via text input / datalist) -->
   <div id="addExpenseModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
     <div class="glass-card border border-red-500/30 w-full max-w-md p-6 rounded-2xl space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -451,17 +449,11 @@
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-semibold uppercase text-slate-400 mb-1">Category</label>
-            <select id="expCategory" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-red-500">
-              <option value="Rental">Rental & Housing</option>
-              <option value="Vehicle Loans">Vehicle Loans (Car/Motor)</option>
-              <option value="Household & Family">Family & Meds (Father/Mother/Coway)</option>
-              <option value="Bills & Utilities">Bills & Utilities (Water/Elec)</option>
-              <option value="Petrol & Fuel">Petrol & Fuel</option>
-              <option value="F&B & Outing">F&B & Dining</option>
-              <option value="Festive Special">Festive / Deepavali</option>
-              <option value="Personal Extra">Personal / General</option>
-            </select>
+            <label class="block font-semibold uppercase text-slate-400 mb-1">Category (Select or Type New)</label>
+            <input type="text" id="expCategory" list="categoryOptionsList" required placeholder="e.g. Bills & Utilities" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-red-500">
+            <datalist id="categoryOptionsList">
+              <!-- Populated dynamically -->
+            </datalist>
           </div>
           <div>
             <label class="block font-semibold uppercase text-slate-400 mb-1">Date</label>
@@ -489,10 +481,10 @@
 
       <form id="pinDeleteForm" class="space-y-3" onsubmit="handlePinDeleteSubmit(event)">
         <div class="flex justify-center gap-2 my-2" id="deletePinGroup">
-          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-10 !h-10 !text-sm" data-index="0" oninput="handlePinInput(event, 'deletePinGroup')" onkeydown="handlePinKeyDown(event, 'deletePinGroup')" autocomplete="off" required>
-          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-10 !h-10 !text-sm" data-index="1" oninput="handlePinInput(event, 'deletePinGroup')" onkeydown="handlePinKeyDown(event, 'deletePinGroup')" autocomplete="off" required>
-          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-10 !h-10 !text-sm" data-index="2" oninput="handlePinInput(event, 'deletePinGroup')" onkeydown="handlePinKeyDown(event, 'deletePinGroup')" autocomplete="off" required>
-          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-10 !h-10 !text-sm" data-index="3" oninput="handlePinInput(event, 'deletePinGroup')" onkeydown="handlePinKeyDown(event, 'deletePinGroup')" autocomplete="off" required>
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-10 !h-10 !text-sm" data-index="0" oninput="handlePinInput(event)" onkeydown="handlePinKeyDown(event)" autocomplete="off" required>
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-10 !h-10 !text-sm" data-index="1" oninput="handlePinInput(event)" onkeydown="handlePinKeyDown(event)" autocomplete="off" required>
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-10 !h-10 !text-sm" data-index="2" oninput="handlePinInput(event)" onkeydown="handlePinKeyDown(event)" autocomplete="off" required>
+          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-digit-input !w-10 !h-10 !text-sm" data-index="3" oninput="handlePinInput(event)" onkeydown="handlePinKeyDown(event)" autocomplete="off" required>
         </div>
         <div id="deletePinError" class="hidden text-[11px] text-red-400 font-semibold">Incorrect PIN. Access Denied.</div>
         <div class="flex gap-2">
@@ -549,16 +541,7 @@
             <option value="Cash">Pay via Cash</option>
             <option value="QR">Pay via QR</option>
           </select>
-          <select id="npCategory" class="bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
-            <option value="Rental">Rental & Housing</option>
-            <option value="Vehicle Loans">Vehicle Loans</option>
-            <option value="Household & Family">Family & Meds</option>
-            <option value="Bills & Utilities">Bills & Utilities</option>
-            <option value="Petrol & Fuel">Petrol & Fuel</option>
-            <option value="F&B & Outing">F&B & Outing</option>
-            <option value="Festive Special">Festive Special</option>
-            <option value="Personal Extra">Personal Extra</option>
-          </select>
+          <input type="text" id="npCategory" list="categoryOptionsList" placeholder="Category (Select or Type New)" required class="bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
         </div>
         <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2 rounded-lg transition">Save New Preset Shortcut</button>
       </form>
@@ -605,16 +588,15 @@
     let transactions = [];
     let donutChartInstance = null;
 
-    const STORAGE_KEY_TRANSACTIONS = 'exec_finance_txs_v8';
-    const STORAGE_KEY_PRESETS = 'exec_finance_presets_v8';
+    const STORAGE_KEY_TRANSACTIONS = 'exec_finance_txs_v9';
+    const STORAGE_KEY_PRESETS = 'exec_finance_presets_v9';
 
     document.addEventListener('DOMContentLoaded', () => {
       loadStorageData();
       initDateInputs();
     });
 
-    // Fully reliable standalone multi-box pin input handler
-    function handlePinInput(e, containerId) {
+    function handlePinInput(e) {
       const input = e.target;
       const val = input.value.replace(/[^0-9]/g, '');
       input.value = val;
@@ -624,7 +606,7 @@
       }
     }
 
-    function handlePinKeyDown(e, containerId) {
+    function handlePinKeyDown(e) {
       const input = e.target;
       if (e.key === 'Backspace' && !input.value && input.previousElementSibling) {
         input.previousElementSibling.focus();
@@ -665,6 +647,34 @@
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('incDate').value = today;
       document.getElementById('expDate').value = today;
+    }
+
+    // Populate category datalist dynamically from all existing categories + defaults
+    function updateCategoryDatalist() {
+      const datalist = document.getElementById('categoryOptionsList');
+      if (!datalist) return;
+      
+      const defaultCats = [
+        "Rental & Housing",
+        "Vehicle Loans",
+        "Household & Family",
+        "Bills & Utilities",
+        "Petrol & Fuel",
+        "F&B & Outing",
+        "Festive Special",
+        "Personal Extra"
+      ];
+
+      const set = new Set(defaultCats);
+      transactions.forEach(t => { if (t.category) set.add(t.category); });
+      presets.forEach(p => { if (p.category) set.add(p.category); });
+
+      datalist.innerHTML = '';
+      set.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        datalist.appendChild(opt);
+      });
     }
 
     function handleUserLogin(e) {
@@ -773,6 +783,7 @@
     }
 
     function renderDashboard() {
+      updateCategoryDatalist();
       document.getElementById('currentMonthYearDisplay').innerText = `${monthNames[selectedMonth]} ${selectedYear}`;
 
       const monthTx = transactions.filter(t => {
@@ -806,7 +817,7 @@
       document.getElementById('cardQrBalance').innerText = `RM ${qrCapital.toFixed(2)}`;
 
       renderFastPresets();
-      renderSalaryDeductionBars(monthTx, totalIncome);
+      renderSalaryDeductionGroupedBars(monthTx, totalIncome);
       renderDonutChart(totalIncome, totalExpense);
       renderTransactionTable(monthTx, totalIncome);
     }
@@ -858,7 +869,7 @@
         description: activePresetToLog.title,
         amount: activePresetToLog.amount,
         account: activePresetToLog.account,
-        category: activePresetToLog.category,
+        category: activePresetToLog.category || 'General',
         date: today
       };
 
@@ -868,7 +879,8 @@
       renderDashboard();
     }
 
-    function renderSalaryDeductionBars(monthTx, totalIncome) {
+    // Group expenses by category so all items belonging to the same category aggregate together and show total category percentage
+    function renderSalaryDeductionGroupedBars(monthTx, totalIncome) {
       const list = document.getElementById('salaryDeductionBarList');
       list.innerHTML = '';
 
@@ -879,17 +891,38 @@
         return;
       }
 
+      const grouped = {};
       expenses.forEach(exp => {
-        const pct = totalIncome > 0 ? ((exp.amount / totalIncome) * 100).toFixed(1) : '0.0';
+        const cat = exp.category || 'General';
+        if (!grouped[cat]) {
+          grouped[cat] = { totalAmount: 0, items: [] };
+        }
+        grouped[cat].totalAmount += exp.amount;
+        grouped[cat].items.push(exp);
+      });
+
+      Object.keys(grouped).forEach(cat => {
+        const groupData = grouped[cat];
+        const catTotal = groupData.totalAmount;
+        const pct = totalIncome > 0 ? ((catTotal / totalIncome) * 100).toFixed(1) : '0.0';
+
+        let itemsDetailsHtml = '';
+        groupData.items.forEach(item => {
+          itemsDetailsHtml += `<div class="text-[11px] text-slate-400 flex justify-between py-0.5 pl-2 border-l border-slate-700"><span>• ${item.description}</span> <span class="font-semibold text-slate-300">RM ${item.amount.toFixed(2)}</span></div>`;
+        });
+
         const row = document.createElement('div');
-        row.className = "bg-slate-900/80 p-3 rounded-xl border border-slate-800 space-y-1.5";
+        row.className = "bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 space-y-2";
         row.innerHTML = `
           <div class="flex items-center justify-between text-xs">
-            <div class="font-bold text-slate-200">${exp.description} <span class="text-[10px] text-slate-400 font-normal">(${exp.category})</span></div>
-            <div class="font-extrabold text-amber-400">RM ${exp.amount.toFixed(2)} <span class="text-[10px] text-slate-400 font-normal">(${pct}%)</span></div>
+            <div class="font-bold text-white text-sm"><i class="fa-solid fa-folder-open text-amber-400 mr-1.5"></i> ${cat}</div>
+            <div class="font-extrabold text-amber-400 text-sm">RM ${catTotal.toFixed(2)} <span class="text-xs text-slate-400 font-normal ml-1">(${pct}%)</span></div>
           </div>
-          <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+          <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800">
             <div class="bg-gradient-to-r from-amber-500 to-amber-300 h-full rounded-full transition-all duration-500" style="width: ${Math.min(pct, 100)}%"></div>
+          </div>
+          <div class="space-y-1 pt-1 border-t border-slate-800/60 mt-2">
+            ${itemsDetailsHtml}
           </div>
         `;
         list.appendChild(row);
@@ -996,7 +1029,7 @@
       const desc = document.getElementById('expDesc').value.trim();
       const amount = parseFloat(document.getElementById('expAmount').value);
       const account = document.getElementById('expAccount').value;
-      const category = document.getElementById('expCategory').value;
+      const category = document.getElementById('expCategory').value.trim();
       const date = document.getElementById('expDate').value;
 
       transactions.push({
@@ -1005,7 +1038,7 @@
         description: desc,
         amount: amount,
         account: account,
-        category: category,
+        category: category || 'General',
         date: date
       });
 
@@ -1067,14 +1100,14 @@
       const title = document.getElementById('npTitle').value.trim();
       const amount = parseFloat(document.getElementById('npAmount').value);
       const account = document.getElementById('npAccount').value;
-      const category = document.getElementById('npCategory').value;
+      const category = document.getElementById('npCategory').value.trim();
 
       presets.push({
         id: 'p_' + Date.now(),
         title: title,
         amount: amount,
         account: account,
-        category: category,
+        category: category || 'General',
         icon: 'fa-receipt'
       });
 
@@ -1139,7 +1172,7 @@
           </div>
           <div class="grid grid-cols-3 gap-2 text-center text-xs">
             <div class="bg-slate-950 p-2 rounded-lg"><span class="text-slate-400 block text-[10px]">INCOME</span><span class="font-bold text-emerald-400">RM ${g.income.toFixed(2)}</span></div>
-            <div class="bg-slate-950 p-2 rounded-lg"><span class="text-slate-400 block text-[10px]">SPENT</span><span class="font-bold text-red-400">RM ${g.expense.toFixed(2)}</span></div>
+            <div class="bg-slate-950 p-2 rounded-lg"><span class="text-slate-400 block total text-[10px]">SPENT</span><span class="font-bold text-red-400">RM ${g.expense.toFixed(2)}</span></div>
             <div class="bg-slate-950 p-2 rounded-lg"><span class="text-slate-400 block text-[10px]">NET SAVINGS</span><span class="font-bold text-amber-400">RM ${net.toFixed(2)}</span></div>
           </div>
           <div class="space-y-1.5 pt-2 border-t border-slate-800/80">
